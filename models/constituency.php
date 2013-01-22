@@ -21,5 +21,17 @@ class Constituency_Model extends ORM {
 	 * @var string
 	 */
 	protected $table_name = 'constituency';
+
+	/**
+	 * Many-to-one relationship definition
+	 * @var array
+	 */
+	protected $belongs_to = array('county');
+
+	/**
+	 * One-to-many relationship definition
+	 * @var array
+	 */
+	protected $has_many = array('ward', 'polling');
 	
 }

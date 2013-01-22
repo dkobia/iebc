@@ -21,5 +21,10 @@ class Ward_Model extends ORM {
 	 * @var string
 	 */
 	protected $table_name = 'ward';
-	
+
+	/**
+	 * Many-to-one relationship definition
+	 * @var array
+	 */
+	protected $belongs_to = array('constituency');
 }

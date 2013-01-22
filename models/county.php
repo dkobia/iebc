@@ -21,5 +21,10 @@ class County_Model extends ORM {
 	 * @var string
 	 */
 	protected $table_name = 'county';
-	
+
+	/**
+	 * One-to-many relationship definition
+	 * @var array
+	 */
+	protected $has_many = array('constituency');
 }
