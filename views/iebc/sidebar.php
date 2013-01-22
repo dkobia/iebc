@@ -6,7 +6,7 @@
 			$county_name = $county->county_name;
 
 			echo '<li>'
-			    . '<a href="#" id=cat_'. $county .'>'
+			    . '<a href="#" id=cat_'. $county->id .'>'
 			    . '<span class="swatch" style="background-color:#ccc"></span>'
 			    . '<span class="county_name">'.$county_name.'</span>'
 			    . '</a>';
