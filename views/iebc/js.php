@@ -7,7 +7,14 @@ wkt = new OpenLayers.Format.WKT();
 jQuery(function() {
 	// Toggle County
 	$("ul#county_switch li > a").click(function(e) {
-		var countyId = this.id.substring(4);
+		var countyId = this.id.substring(6);
+
+		// Remove All active
+		$("a[id^='const_']").removeClass("iebc_active");
+
+		// Add Active Class
+		$(this).addClass("iebc_active"); 
+
 		// Destroy existing IEBC layers (if any)
 		if (iebcLayer.destroyFeatures !== undefined)
 			iebcLayer.destroyFeatures();

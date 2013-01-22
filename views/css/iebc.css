@@ -1,0 +1,8 @@
+#county_switch .iebc_active {
+	color:#000;
+	background-color:#eee;
+	font-weight: bold;
+}
+#county_switch .iebc_active:hover{
+	background-color:#ccc;
+}

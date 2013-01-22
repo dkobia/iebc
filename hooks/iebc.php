@@ -33,8 +33,14 @@ class iebc {
 		// Add Sidebar Box
 		Event::add('ushahidi_action.main_sidebar', array($this, 'county_sidebar'));
 
-		// Add County/Constituency/Polling Station Layers
-		Event::add('ushahidi_action.header_scripts', array($this, 'main_js'));
+		// Only add the events if we are on that controller
+		if (Router::$controller == 'main')
+		{
+			// Add County/Constituency/Polling Station Layers
+			Event::add('ushahidi_action.header_scripts', array($this, 'main_js'));
+
+			plugin::add_stylesheet('iebc/views/css/iebc');
+		}
 	}
 
 	public function county_sidebar()
