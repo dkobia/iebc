@@ -41,6 +41,12 @@ class iebc {
 
 			plugin::add_stylesheet('iebc/views/css/iebc');
 		}
+
+		// Add Constituency Select Parameters
+		Event::add('ushahidi_filter.fetch_incidents_set_params', array($this, 'filter'));	
+
+		// Add Sidebar Box
+		Event::add('ushahidi_action.main_sidebar', array($this, 'county_sidebar'));
 	}
 
 	public function county_sidebar()
@@ -54,6 +60,33 @@ class iebc {
 	{
 		$js = View::factory('iebc/js');
 		$js->render(TRUE);
+	}
+
+	public function filter()
+	{
+		if (isset($_GET['cty']) AND (int) $_GET['cty'])
+		{
+			$db = new Database();
+
+			$county_id = (int) $_GET['cty'];
+			$sql = "SELECT AsText(geometry) as geometry
+					FROM ".Kohana::config('database.default.table_prefix')."county 
+					WHERE id = ?";
+			$query = $db->query($sql, $county_id);
+			$geometry = FALSE;
+			foreach ( $query as $item )
+			{
+				$geometry = $item->geometry;
+			}
+
+			if ($geometry)
+			{
+				$filter = " MBRContains(GeomFromText('".$geometry."'), GeomFromText(CONCAT_WS(' ','Point(',l.longitude, l.latitude,')')))";
+
+				// Finally add to filters params
+				array_push(Event::$data, $filter);
+			}
+		}
 	}
 
 	/**

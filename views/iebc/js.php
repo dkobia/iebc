@@ -13,13 +13,20 @@ jQuery(function() {
 		$("a[id^='const_']").removeClass("iebc_active");
 
 		// Add Active Class
-		$(this).addClass("iebc_active"); 
+		$(this).addClass("iebc_active");
+
+		// Update report filters
+		map.updateReportFilters({cty: countyId});
 
 		// Destroy existing IEBC layers (if any)
 		if (iebcLayer.destroyFeatures !== undefined)
 			iebcLayer.destroyFeatures();
-		getWKT(countyId);
-		
+
+		if (countyId != 0) {
+			getWKT(countyId);
+		};
+
+		e.stopPropagation();
 		return false;
 	});
 

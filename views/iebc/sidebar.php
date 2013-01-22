@@ -1,5 +1,11 @@
 <h3><a href="#"><?php echo Kohana::lang('uchaguzi.county')?></a></h3>
 <ul id="county_switch" class="categorylist">
+	<li>
+		<a href="#" id="const_0">
+		<span class="swatch" style="background-color:#ccc"></span>
+		<span class="county_name">ALL</span>
+		</a>
+	</li>
 	<?php
 		foreach ($counties as $county)
 		{
