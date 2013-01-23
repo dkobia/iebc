@@ -1,0 +1,5 @@
+.*swp
+.htaccess
+*~
+*.DS_Store
+controllers/shapes.php
