@@ -87,6 +87,30 @@ class iebc {
 				array_push(Event::$data, $filter);
 			}
 		}
+
+		if (isset($_GET['cst']) AND (int) $_GET['cst'])
+		{
+			$db = new Database();
+
+			$constituency_id = (int) $_GET['cst'];
+			$sql = "SELECT AsText(geometry) as geometry
+					FROM ".Kohana::config('database.default.table_prefix')."constituency 
+					WHERE id = ?";
+			$query = $db->query($sql, $constituency_id);
+			$geometry = FALSE;
+			foreach ( $query as $item )
+			{
+				$geometry = $item->geometry;
+			}
+
+			if ($geometry)
+			{
+				$filter = " MBRContains(GeomFromText('".$geometry."'), GeomFromText(CONCAT_WS(' ','Point(',l.longitude, l.latitude,')')))";
+
+				// Finally add to filters params
+				array_push(Event::$data, $filter);
+			}
+		}
 	}
 
 	/**

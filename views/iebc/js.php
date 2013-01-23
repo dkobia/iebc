@@ -7,23 +7,46 @@ wkt = new OpenLayers.Format.WKT();
 jQuery(function() {
 	// Toggle County
 	$("ul#county_switch li > a").click(function(e) {
-		var countyId = this.id.substring(6);
+		// Item Type (county, constituency)
+		var type = this.id.substring(0, 4);
+		// Item ID
+		var id = this.id.substring(5);
 
 		// Remove All active
-		$("a[id^='const_']").removeClass("iebc_active");
+		$("a[id^='coun_']").removeClass("iebc_active");
+		$("a[id^='cons_']").removeClass("iebc_active");
+
+		// Hide All Children DIV
+		if (type == 'coun') {
+			$("[id^='countyChild_']").hide();
+		} else if (type == 'cons') {
+			$("[id^='constituencyChild_']").hide();
+		}
 
 		// Add Active Class
 		$(this).addClass("iebc_active");
 
-		// Update report filters
-		map.updateReportFilters({cty: countyId});
+		// Update map report filters
+		if (type == 'coun') { // County Filter
+			// Show children DIV
+			$("#countyChild_" + id).show();
+			$(this).parents("div").show();
+
+			map.updateReportFilters({cty: id});
+		} else if (type == 'cons') { // Constituency Filter
+			// Show children DIV
+			$("#constituencyChild_" + id).show();
+			$(this).parents("div").show();
+
+			map.updateReportFilters({cst: id});
+		}
 
 		// Destroy existing IEBC layers (if any)
 		if (iebcLayer.destroyFeatures !== undefined)
 			iebcLayer.destroyFeatures();
 
-		if (countyId != 0) {
-			getWKT(countyId);
+		if (id != 0) {
+			getWKT(id, type);
 		};
 
 		e.stopPropagation();
@@ -64,17 +87,29 @@ jQuery(function() {
 
 });
 
-function getWKT(id){
-	$.get("iebc/county/"+id, function(data){
-		if (data.features) {
-			// Add Counties to Map
-			parseWKT(data, id, 'county');
-			// Add Counties Constituencies to Map
-			for(var i=0; i<data.children.length; ++i) {
-				parseWKT(data.children[i], 0, 'constituency');
+function getWKT(id, type){
+	// Get County Shapes
+	if (type == 'coun') {
+		$.get("iebc/county/"+id, function(data){
+			if (data.features) {
+				// Add Counties to Map
+				parseWKT(data, id, 'county');
+				// Add Counties Constituencies to Map
+				for(var i=0; i<data.children.length; ++i) {
+					parseWKT(data.children[i], 0, 'constituency');
+				}
 			}
-		}
-	}, 'json');
+		}, 'json');
+
+	// Get Constituency Shapes
+	} else if (type == 'cons') {
+		$.get("iebc/constituency/"+id, function(data){
+			if (data.features) {
+				// Add Constituencies to Map
+				parseWKT(data, id, 'county');
+			}
+		}, 'json');
+	};
 }
 
 function parseWKT(data, id, type) {
