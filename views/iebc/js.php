@@ -12,14 +12,13 @@ jQuery(function() {
 		// Item ID
 		var id = this.id.substring(5);
 
-		// Remove All active
-		$("a[id^='coun_']").removeClass("iebc_active");
-		$("a[id^='cons_']").removeClass("iebc_active");
-
-		// Hide All Children DIV
+		// Remove All active + Hide All Children DIV
 		if (type == 'coun') {
+			$("a[id^='coun_']").removeClass("iebc_active");
 			$("[id^='countyChild_']").hide();
 		} else if (type == 'cons') {
+			$("a[id^='cons_']").removeClass("iebc_active");
+			$("a[id^='poll_']").removeClass("iebc_active");
 			$("[id^='constituencyChild_']").hide();
 		}
 
@@ -31,21 +30,26 @@ jQuery(function() {
 			// Show children DIV
 			$("#countyChild_" + id).show();
 			$(this).parents("div").show();
-
-			map.updateReportFilters({cty: id});
+			map.updateReportFilters({cty: id, cst: 0});
 		} else if (type == 'cons') { // Constituency Filter
 			// Show children DIV
 			$("#constituencyChild_" + id).show();
 			$(this).parents("div").show();
-
-			map.updateReportFilters({cst: id});
+			map.updateReportFilters({cty: 0, cst: id});
 		}
 
-		// Destroy existing IEBC layers (if any)
-		if (iebcLayer.destroyFeatures !== undefined)
-			iebcLayer.destroyFeatures();
+		// Add Poll Stations
+		if (type == 'poll') {
+			getPolling(id)
+		} else {
+			// Destroy existing IEBC features (if any)
+			if (iebcLayer.destroyFeatures !== undefined)
+				iebcLayer.destroyFeatures();
+			// Remove polling station layer
+			deletePolling();
+		}
 
-		if (id != 0) {
+		if (id != 0 && (type == 'coun' || type == 'cons') )  {
 			getWKT(id, type);
 		};
 
@@ -160,6 +164,24 @@ function parseWKT(data, id, type) {
 		}
 	} else {
 		alert('Invalid WKT Data');
+	}
+}
+
+function getPolling(id){
+	deletePolling();
+	map.addLayer(Ushahidi.GEOJSON, {
+		name: "Polling Stations",
+		url: "iebc/polling/" + id
+	});
+}
+
+function deletePolling(){
+	// Remove polling station layer
+	var layers = Ushahidi._currentMap._olMap.getLayersByName('Polling Stations');
+	for (var i=0; i < layers.length; i++) {
+		if (layers[i].destroyFeatures !== undefined)
+			layers[i].destroyFeatures();
+		Ushahidi._currentMap._olMap.removeLayer(layers[i]);
 	}
 }
 

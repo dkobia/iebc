@@ -38,7 +38,7 @@
 					echo '<li style="padding-left:40px;">'
 						. '<a href="#" id="cons_'. $constituency->id .'">'
 						. '<span class="swatch" style="background-color:#1BB6A4"></span>'
-						. '<span class="category-title">REPORTS</span>'
+						. '<span class="category-title">CITIZEN REPORTS</span>'
 						. '</a>'
 						. '</li>';
 					// Polling Stations

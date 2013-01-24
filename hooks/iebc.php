@@ -28,8 +28,6 @@ class iebc {
 	 */
 	public function add()
 	{
-		$county_tree_view = county::get_county_tree_view();
-
 		// Add Sidebar Box
 		Event::add('ushahidi_action.main_sidebar', array($this, 'county_sidebar'));
 
@@ -49,6 +47,9 @@ class iebc {
 		Event::add('ushahidi_action.main_sidebar', array($this, 'county_sidebar'));
 	}
 
+	/**
+	 * Main page right side bar
+	 */
 	public function county_sidebar()
 	{
 		$box = View::factory('iebc/sidebar');
@@ -56,12 +57,18 @@ class iebc {
 		$box->render(TRUE);
 	}
 
+	/**
+	 * Main inline JS
+	 */
 	public function main_js()
 	{
 		$js = View::factory('iebc/js');
 		$js->render(TRUE);
 	}
 
+	/**
+	 * Hook into the report map filter
+	 */
 	public function filter()
 	{
 		if (isset($_GET['cty']) AND (int) $_GET['cty'])
@@ -147,7 +154,9 @@ class iebc {
 		print $json_output;
 	}
 
-	//Get all Counties
+	/**
+	 * Get All the Counties
+	 */
 	private function _counties()
 	{
 		$counties = ORM::factory('county')

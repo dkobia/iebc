@@ -9,6 +9,7 @@ class Iebc_Controller extends Controller {
 
 	/**
 	 * GET County GeoJSON
+	 * @param $int id county_id
 	 */
 	public function county($id = 0)
 	{
@@ -57,6 +58,7 @@ class Iebc_Controller extends Controller {
 
 	/**
 	 * GET Constituency GeoJSON
+	 * @param $int id constituency_id
 	 */
 	public function constituency($id = 0)
 	{
@@ -88,5 +90,47 @@ class Iebc_Controller extends Controller {
 
 		header('Content-type: application/json; charset=utf-8');
 		echo json_encode($json);
+	}
+
+	/**
+	 * GET Polling Stations GEOJSON
+	 * @param $int id constituency_id
+	 */
+	public function polling($id = 0)
+	{
+		$json_features = array();
+		$stations = ORM::factory('polling')
+			->where('constituency_id', $id)
+			->find_all();
+
+		foreach ($stations as $station)
+		{
+			$json_item = array();
+			$json_item['type'] = 'Feature';
+			$json_item['properties'] = array(
+				'id' => $station->id,
+				'name' => $station->polling_name,
+				'link' => '',
+				'category' => '',
+				'color' => '#25B200',
+				'icon' => '',
+				'thumb' => '',
+				'timestamp' => strtotime("now")
+			);
+			$json_item['geometry'] = array(
+				'type' => 'Point',
+				'coordinates' => array($station->longitude, $station->latitude)
+			);
+
+			array_push($json_features, $json_item);
+		}
+
+		$json = json_encode(array(
+			"type" => "FeatureCollection",
+			"features" => $json_features
+		));
+
+		header('Content-type: application/json; charset=utf-8');
+		echo $json;
 	}
 }
