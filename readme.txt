@@ -12,6 +12,8 @@ author website: http://www.dkfactor.com
 
 == Installation ==
 1. Copy the entire /iebc/ directory into your /plugins/ directory.
+2. Unzip sql file in the /iebc/data directory
+3. Import the tables and data into your database
 2. Activate the plugin.
 
 == Changelog ==
