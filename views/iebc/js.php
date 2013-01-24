@@ -169,9 +169,25 @@ function parseWKT(data, id, type) {
 
 function getPolling(id){
 	deletePolling();
+
+	// Styling for the checkins
+	var pollingStyle = new OpenLayers.Style({
+		pointRadius: 6,
+		fillColor: "#333",
+		strokeColor: "#FFFFFF",
+		fillOpacity: 0.75,
+		strokeOpacity: 0.75,
+		strokeWidth: 1.5
+	});
+
+	var pollingStyleMap = new OpenLayers.StyleMap({
+		default: pollingStyle
+	});
+
 	map.addLayer(Ushahidi.GEOJSON, {
 		name: "Polling Stations",
-		url: "iebc/polling/" + id
+		url: "iebc/polling/" + id,
+		styleMap: pollingStyleMap,
 	});
 }
 
