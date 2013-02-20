@@ -20,9 +20,9 @@
 
 			// Get Children
 			echo '<div class="hide" id="countyChild_'. $county->id .'"><ul>';
-			foreach ($county->constituency
-				//->orderby('constituency_name', 'ASC')
-				//->find_all()
+			// Only grab the fields we need, much faster result (especially without grabbing the polygon data)
+			$constituencies = ORM::factory('constituency')->select('id', 'constituency_name')->where('county_id', $county->id)->find_all();
+			foreach ($constituencies
 				 as $constituency)
 			{
 				echo '<li style="padding-left:20px;">'
