@@ -6,3 +6,7 @@
 #county_switch .iebc_active:hover{
 	background-color:#ddd;
 }
+#constituency_select{
+	clear:both;
+	margin:30px 0 0 0;
+}

@@ -36,9 +36,16 @@ class iebc {
 		{
 			// Add County/Constituency/Polling Station Layers
 			Event::add('ushahidi_action.header_scripts', array($this, 'main_js'));
-
-			plugin::add_stylesheet('iebc/views/css/iebc');
 		}
+
+		if (Router::$controller == 'reports' AND Router::$method == 'edit')
+		{
+			Event::add('ushahidi_action.header_scripts', array($this, 'const_js'));	
+		}
+
+		plugin::add_stylesheet('iebc/views/css/iebc');
+
+		Event::add('ushahidi_action.report_form_admin_location', array($this, 'const_select'));
 
 		// Add Constituency Select Parameters
 		Event::add('ushahidi_filter.fetch_incidents_set_params', array($this, 'filter'));	
@@ -64,6 +71,41 @@ class iebc {
 	{
 		$js = View::factory('iebc/js');
 		$js->render(TRUE);
+	}
+
+	/**
+	 * Reports inline JS
+	 */
+	public function const_js()
+	{
+		$js = View::factory('iebc/select');
+		$js->default_zoom = Kohana::config('settings.default_zoom');
+		$js->render(TRUE);
+	}
+
+	/**
+	 * Constituency Dropdown Select
+	 */
+	public function const_select()
+	{
+		echo '<div class="row"><div id="constituency_select">* Or Select A Constituency.<br /><select id="constituency">';
+		echo '<option value="">-- Select One --</option>';
+		$constituencies = ORM::factory('constituency')
+			->orderby('constituency_name')
+			->find_all();
+
+		foreach ($constituencies as $constituency)
+		{
+			echo '<option value=\''.json_encode(
+				array(
+					'id' => $constituency->id,
+					'name' => $constituency->constituency_name,
+					'latitude' => $constituency->latitude,
+					'longitude' => $constituency->longitude
+					)
+				).'\'>'.$constituency->constituency_name.'</option>';
+		}
+		echo '</select></div></div>';
 	}
 
 	/**
