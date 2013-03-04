@@ -42,6 +42,13 @@ class iebc {
 		{
 			Event::add('ushahidi_action.header_scripts', array($this, 'const_js'));	
 		}
+		
+		if (stripos(Router::$current_uri, "admin/reports/download") !== false)
+		{
+			Event::add('ushahidi_filter.report_download_csv_header', array($this, 'csv_header'));
+			Event::add('ushahidi_filter.report_download_csv_incident', array($this, 'csv_incident'));
+			Event::add('ushahidi_action.reports_download_form_data', array($this, 'reports_download_form_data'));
+		}
 
 		plugin::add_stylesheet('iebc/views/css/iebc');
 
@@ -207,6 +214,60 @@ class iebc {
 
 		return $counties;
 	}
+	
+	public function csv_header()
+	{
+		$header = Event::$data;
+		if (!empty($_POST['data_include_county']))
+		{
+			$header .= ",CONSTITUENCY_NAME,CONSTITUENCY_CODE,COUNTY_NAME,COUNTY_CODE";
+		}
+		Event::$data = $header;
+	}
+	
+	public function csv_incident()
+	{
+		$data = Event::$data;
+		$incident = $data['incident'];
+		$csv_text = $data['report_csv'];
+		if (!empty($_POST['data_include_county']))
+		{
+			
+			$db = Database::instance();
+			
+			$constituency = $db->query("
+				SELECT c.constituency_name, c.const_code, county_name, county.county_code FROM constituency c
+				LEFT JOIN county ON (county.id = c.county_id)
+				WHERE
+				MBRContains(c.geometry, GeomFromText('Point(? ?)'))
+				LIMIT 0,1 
+			", $incident->location->longitude, $incident->location->latitude);
+			
+			if ($constituency->count() > 0) {
+				$result = $constituency->result_array(FALSE);
+				$csv_text .= ','.implode(',', $result[0]);
+			}
+			else
+			{
+				$csv_text .= ',,,,';
+			}
+			
+		}
+		Event::$data = array("report_csv" => $csv_text, "incident" => $incident);
+	}
+	
+	public function reports_download_form_data()
+	{
+		
+		echo "
+		<tr>
+			<td>".form::checkbox('data_include_county','1',FALSE)." Include County/Constituency data</td>
+			<td></td>
+		</tr>
+		";
+		
+	}
+	
 }
 
 new iebc;
